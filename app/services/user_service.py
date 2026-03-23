@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from app.models.user import User
 from app.schemas.user import UserCreate
 
+
 class UserService:
 
     def get_all(self, db: Session):
@@ -13,7 +14,8 @@ class UserService:
     def create(self, db: Session, user: UserCreate):
         db_user = User(
             name=user.name,
-            account_number=user.account_number
+            account_number=user.account_number,
+            news=[item.dict() for item in user.news] if user.news else None
         )
         db.add(db_user)
         db.commit()
@@ -27,6 +29,9 @@ class UserService:
 
         user.name = user_data.name
         user.account_number = user_data.account_number
+
+        if user_data.news is not None:
+            user.news = [item.dict() for item in user_data.news]
 
         db.commit()
         db.refresh(user)
