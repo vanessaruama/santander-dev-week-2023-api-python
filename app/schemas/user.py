@@ -21,3 +21,8 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    account_number: Optional[str] = None
+    news: Optional[List[NewsItem]] = None

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.user import User
-from app.schemas.user import UserCreate
+from app.schemas.user import UserCreate, UserUpdate
 
 
 class UserService:
@@ -22,13 +22,16 @@ class UserService:
         db.refresh(db_user)
         return db_user
 
-    def update(self, db: Session, user_id: int, user_data: UserCreate):
+    def update(self, db: Session, user_id: int, user_data: UserUpdate):
         user = self.get_by_id(db, user_id)
         if not user:
             return None
 
-        user.name = user_data.name
-        user.account_number = user_data.account_number
+        if user_data.name is not None:
+            user.name = user_data.name
+
+        if user_data.account_number is not None:
+            user.account_number = user_data.account_number
 
         if user_data.news is not None:
             user.news = [item.dict() for item in user_data.news]
@@ -36,7 +39,7 @@ class UserService:
         db.commit()
         db.refresh(user)
         return user
-
+    
     def delete(self, db: Session, user_id: int):
         user = self.get_by_id(db, user_id)
         if not user:
